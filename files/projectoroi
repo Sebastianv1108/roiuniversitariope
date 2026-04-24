@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROI Universitario Perú — ¿Vale la pena tu universidad?</title>
+  <meta name="description" content="Calcula el retorno real de estudiar en una universidad peruana. Datos reales del INEI y Ministerio de Trabajo.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="nav-logo">ROI<span class="nav-logo-dot">.</span>pe</span>
+      <a href="#datos" class="nav-link">Base de datos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">Datos reales · INEI + Ministerio de Trabajo</div>
+    <h1 class="hero-title">¿Cuánto tiempo tardas en<br><em>recuperar</em> tu universidad?</h1>
+    <p class="hero-sub">La calculadora que nadie te dio antes de firmar la matrícula.<br>Gratis. Sin registro. Para cualquier peruano.</p>
+    <a href="#calculadora" class="btn-primary">Calcular mi ROI</a>
+  </section>
+
+  <!-- CALCULADORA -->
+  <section class="section" id="calculadora">
+    <div class="container">
+      <div class="section-label">Calculadora</div>
+      <h2 class="section-title">Ingresa tus datos</h2>
+
+      <div class="calc-grid">
+        <div class="calc-inputs">
+
+          <div class="input-group">
+            <label>Universidad</label>
+            <select id="uni-preset" onchange="applyPreset()">
+              <option value="">— Selecciona o ingresa manualmente —</option>
+              <optgroup label="Universidades Públicas">
+                <option value="uni-sistemas">UNI — Ing. Sistemas</option>
+                <option value="unmsm-sistemas">UNMSM — Ing. Sistemas</option>
+                <option value="unmsm-economia">UNMSM — Economía</option>
+                <option value="unmsm-admin">UNMSM — Administración</option>
+                <option value="unmsm-comunicaciones">UNMSM — Comunicaciones</option>
+                <option value="villarreal-sistemas">Villarreal — Ing. Sistemas</option>
+                <option value="villarreal-admin">Villarreal — Administración</option>
+              </optgroup>
+              <optgroup label="Universidades Privadas">
+                <option value="pacifico-economia">U. Pacífico — Economía</option>
+                <option value="pacifico-admin">U. Pacífico — Administración</option>
+                <option value="pucp-sistemas">PUCP — Ing. Sistemas</option>
+                <option value="pucp-economia">PUCP — Economía</option>
+                <option value="ulima-economia">U. Lima — Economía</option>
+                <option value="ulima-admin">U. Lima — Administración</option>
+                <option value="ulima-comunicaciones">U. Lima — Comunicaciones</option>
+                <option value="utec-sistemas">UTEC — Ing. Sistemas</option>
+                <option value="upc-sistemas">UPC — Ing. Sistemas</option>
+                <option value="upc-admin">UPC — Administración</option>
+                <option value="upc-comunicaciones">UPC — Comunicaciones</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label>Pensión mensual (S/)</label>
+              <input type="number" id="pension" placeholder="ej. 2500" min="0" oninput="calculate()">
+            </div>
+            <div class="input-group">
+              <label>Salario esperado al egreso (S/)</label>
+              <input type="number" id="salario" placeholder="ej. 3500" min="0" oninput="calculate()">
+              <span class="input-hint">Busca tu carrera en <a href="https://ponteencarrera.pe" target="_blank">ponteencarrera.pe</a></span>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label>Número de ciclos</label>
+              <input type="number" id="ciclos" value="10" min="1" max="16" oninput="calculate()">
+            </div>
+            <div class="input-group">
+              <label>Crecimiento salarial anual (%)</label>
+              <input type="number" id="crecimiento" value="5" min="0" max="30" oninput="calculate()">
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Meses por ciclo</span>
+              <span id="meses-val" class="slider-value">5 meses</span>
+            </div>
+            <input type="range" id="meses" min="4" max="6" value="5" step="1" oninput="updateMeses();calculate()">
+          </div>
+
+        </div>
+
+        <!-- RESULTADOS -->
+        <div class="calc-results" id="results">
+          <div class="result-empty" id="result-empty">
+            <div class="result-empty-icon">→</div>
+            <p>Completa los datos para ver tu análisis</p>
+          </div>
+
+          <div class="result-content hidden" id="result-content">
+            <div class="verdict-banner" id="verdict-banner">
+              <span class="verdict-emoji" id="verdict-emoji"></span>
+              <span class="verdict-text" id="verdict-text"></span>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric">
+                <div class="metric-label">Costo total de la carrera</div>
+                <div class="metric-value" id="res-costo"></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Punto de equilibrio</div>
+                <div class="metric-value highlight" id="res-equilibrio"></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">ROI a 5 años</div>
+                <div class="metric-value" id="res-roi5"></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">ROI a 10 años</div>
+                <div class="metric-value" id="res-roi10"></div>
+              </div>
+            </div>
+
+            <div class="roi-bar-section">
+              <div class="roi-bar-label">Recuperación de inversión</div>
+              <div class="roi-bar-track">
+                <div class="roi-bar-fill" id="roi-bar"></div>
+                <div class="roi-bar-marker" id="roi-marker"></div>
+              </div>
+              <div class="roi-bar-ticks">
+                <span>0</span><span>3 años</span><span>6 años</span><span>10+ años</span>
+              </div>
+            </div>
+
+            <p class="result-note">Este modelo asume empleo formal al egreso y crecimiento salarial constante. No incluye inflación ni costo de oportunidad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARADOR -->
+  <section class="section section-alt" id="comparador">
+    <div class="container">
+      <div class="section-label">Comparador</div>
+      <h2 class="section-title">Compara hasta 3 opciones</h2>
+      <div id="comparador-table"></div>
+      <button class="btn-secondary" onclick="loadComparador()">Cargar comparación de ejemplo</button>
+    </div>
+  </section>
+
+  <!-- BASE DE DATOS -->
+  <section class="section" id="datos">
+    <div class="container">
+      <div class="section-label">Base de Datos</div>
+      <h2 class="section-title">20 combinaciones analizadas</h2>
+      <p class="section-desc">Datos del INEI, Ministerio de Trabajo y páginas oficiales de universidades (2024)</p>
+
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterData('all', this)">Todas</button>
+        <button class="filter-btn" onclick="filterData('publica', this)">Públicas</button>
+        <button class="filter-btn" onclick="filterData('privada', this)">Privadas</button>
+        <button class="filter-btn roi-green" onclick="filterData('green', this)">ROI Alto</button>
+        <button class="filter-btn roi-red" onclick="filterData('red', this)">ROI Bajo</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="data-table">
+          <thead>
+            <tr>
+              <th>Universidad</th>
+              <th>Tipo</th>
+              <th>Carrera</th>
+              <th>Pensión/mes</th>
+              <th>Costo total</th>
+              <th>Salario egreso</th>
+              <th>Punto equilibrio</th>
+              <th>ROI</th>
+            </tr>
+          </thead>
+          <tbody id="data-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <span class="nav-logo">ROI<span class="nav-logo-dot">.</span>pe</span>
+          <p class="footer-desc">La próxima gran mente peruana no debería quedarse atrás por no tener acceso a esta información. Por eso la construí y la puse aquí, gratis.</p>
+          <p class="footer-desc"><strong>Creado por Sebastián Villanueva</strong></p>
+        </div>
+        <div class="footer-links">
+          <a href="https://youtube.com/@sebastianvillanuevaa" target="_blank">YouTube</a>
+          <a href="#calculadora">Calculadora</a>
+          <a href="#datos">Base de datos</a>
+        </div>
+      </div>
+      <div class="footer-sources">
+        Fuentes: INEI (Encuesta Permanente de Empleo 2023) · MTPE (Planilla Electrónica 2023 vía Ponte en Carrera) · Páginas oficiales de universidades (2024)
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
